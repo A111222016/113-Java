@@ -1,38 +1,49 @@
-// 定義抽象類別 Food，實作 MenuItem 介面
+// 修改 Food 類別
 public abstract class Food implements MenuItem {
-    private String name; // 食物名稱
-    private double price; // 食物價格
-    private boolean vegetarian; // 是否為素食
+    private String name;
+    private double price;
+    private boolean vegetarian;
+    private int stock;
 
-    // 建構子
-    public Food(String name, double price, boolean vegetarian) {
+    public Food(String name, double price, boolean vegetarian, int stock) {
         this.name = name;
         this.price = price;
         this.vegetarian = vegetarian;
+        this.stock = stock;
     }
 
     @Override
     public String getName() {
-        return name; // 回傳名稱
+        return name;
     }
 
     @Override
     public double getPrice() {
-        return price; // 回傳價格
+        return price;
     }
 
     @Override
     public boolean isVegetarian() {
-        return vegetarian; // 回傳是否為素食
+        return vegetarian;
     }
 
     @Override
-    public String getCategory() {
-        return "General"; // 預設類別為 General
+    public boolean isOutOfStock() {
+        return stock <= 0;
     }
 
-    // 抽象方法，由子類別實作
+    @Override
+    public int getStock() {
+        return stock;
+    }
+
+    @Override
+    public void reduceStock() throws OutOfStockException {
+        if (stock <= 0) {
+            throw new OutOfStockException(name + " 缺貨中。");
+        }
+        stock--;
+    }
+
     public abstract void prepare();
 }
-
-

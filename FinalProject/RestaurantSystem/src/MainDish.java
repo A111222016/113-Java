@@ -1,13 +1,11 @@
-// MainDish 類別繼承 Food，表示主菜
+// 修改 MainDish 類別
 public class MainDish extends Food {
-    public MainDish(String name, double price, boolean vegetarian) {
-        super(name, price, vegetarian); // 呼叫父類別建構子
+    public MainDish(String name, double price, boolean vegetarian, int stock) {
+        super(name, price, vegetarian, stock);
     }
 
     @Override
     public void prepare() {
-        System.out.println("Preparing main dish: " + getName()); // 準備主菜
+        System.out.println("準備主菜：" + getName());
     }
 }
-
-

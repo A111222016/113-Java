@@ -1,58 +1,55 @@
-import java.util.ArrayList;
+import java.util.List;
 
-// Combo 類別表示套餐，實作 MenuItem 介面
 public class Combo implements MenuItem {
-    private String name; // 套餐名稱
-    private ArrayList<MenuItem> items; // 套餐項目列表
-    private double discount; // 折扣率
+    private String name;
+    private double price; // 固定價格，或者根據單品計算
+    private boolean vegetarian;
+    private int stock;
+    private List<MenuItem> items; // 套餐內的單品
 
-    // 建構子
-    public Combo(String name, double discount) {
+    public Combo(String name, List<MenuItem> items, int stock) {
         this.name = name;
-        this.items = new ArrayList<>();
-        this.discount = discount;
-    }
+        this.items = items;
+        this.stock = stock;
 
-    // 添加項目到套餐
-    public void addItem(MenuItem item) {
-        items.add(item);
+        // 動態計算套餐價格與是否素食
+        this.price = items.stream().mapToDouble(MenuItem::getPrice).sum();
+        this.vegetarian = items.stream().allMatch(MenuItem::isVegetarian);
     }
 
     @Override
     public String getName() {
-        return name; // 回傳套餐名稱
+        return name;
     }
 
     @Override
     public double getPrice() {
-        double total = 0;
-        for (MenuItem item : items) {
-            total += item.getPrice(); // 計算套餐總價
-        }
-        return total * (1 - discount); // 套用折扣後的價格
-    }
-
-    @Override
-    public String getCategory() {
-        return "Combo"; // 回傳類別為套餐
+        return price;
     }
 
     @Override
     public boolean isVegetarian() {
-        for (MenuItem item : items) {
-            if (!item.isVegetarian()) {
-                return false; // 若有非素食項目則回傳 false
-            }
-        }
-        return true;
+        return vegetarian;
     }
 
-    // 顯示套餐細節
-    public void showComboDetails() {
-        System.out.println("Combo: " + name);
-        for (MenuItem item : items) {
-            System.out.println("- " + item.getName() + ": $" + item.getPrice());
+    @Override
+    public boolean isOutOfStock() {
+        return stock <= 0 || items.stream().anyMatch(MenuItem::isOutOfStock);
+    }
+
+    @Override
+    public int getStock() {
+        return stock;
+    }
+
+    @Override
+    public void reduceStock() throws OutOfStockException {
+        if (isOutOfStock()) {
+            throw new OutOfStockException(name + " 缺貨中。");
         }
-        System.out.println("Total price after discount: $" + getPrice());
+        stock--;
+        for (MenuItem item : items) {
+            item.reduceStock();
+        }
     }
 }
